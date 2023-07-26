@@ -1,4 +1,5 @@
 import { User } from './users/interfaces/user.interface';
+import { Track } from './track/interfaces/track.interface';
 
 export const users: User[] = [
   {
@@ -10,3 +11,5 @@ export const users: User[] = [
     updatedAt: 1690399463814,
   },
 ];
+
+export const tracks: Track[] = [];
