@@ -7,4 +7,8 @@ export class UsersService {
   public getAll(): User[] {
     return users;
   }
+
+  public getById(id: string): User {
+    return users.find((user) => user.id === id);
+  }
 }
