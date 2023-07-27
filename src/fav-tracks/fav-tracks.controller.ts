@@ -1,4 +1,11 @@
-import { Controller, Delete, Param, ParseUUIDPipe, Post } from '@nestjs/common';
+import {
+  Controller,
+  Delete,
+  HttpCode,
+  Param,
+  ParseUUIDPipe,
+  Post,
+} from '@nestjs/common';
 import { FavTracksService } from './fav-tracks.service';
 
 @Controller()
@@ -11,6 +18,7 @@ export class FavTracksController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.favTracksService.deleteFromFavs(id);
   }

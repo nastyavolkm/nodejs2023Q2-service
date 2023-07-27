@@ -1,15 +1,19 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { DataService } from '../data/data.service';
 
 @Injectable()
 export class FavTracksService {
   constructor(private dataService: DataService) {}
   public async addToFavs(id: string): Promise<void> {
-    const track = this.dataService.getTrackById(id);
+    const track = await this.dataService.getTrackById(id);
     if (track) {
       await this.dataService.addTrackToFavs(id);
     } else {
-      throw new NotFoundException(`Track with id ${id} not found`);
+      throw new UnprocessableEntityException(`Track with id ${id} not found`);
     }
   }
 

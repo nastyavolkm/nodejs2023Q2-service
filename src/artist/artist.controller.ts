@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   Param,
   ParseUUIDPipe,
   Post,
@@ -41,6 +42,7 @@ export class ArtistController {
   }
 
   @Delete(':id')
+  @HttpCode(204)
   async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.artistService.delete(id);
   }
