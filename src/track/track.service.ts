@@ -1,18 +1,23 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { tracks } from '../store';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { Track } from './interfaces/track.interface';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
+import { DataService } from '../data/data.service';
 
 @Injectable()
 export class TrackService {
+  constructor(private dataService: DataService) {}
   public async getAll(): Promise<Track[]> {
-    return tracks;
+    return this.dataService.getTracks();
   }
 
   public async getById(id: string): Promise<Track> {
-    const track = tracks.find((track) => track.id === id);
+    const track = await this.dataService.getTrackById(id);
     if (track) return track;
     throw new NotFoundException(`Track with id ${id} not found`);
   }
@@ -24,28 +29,23 @@ export class TrackService {
       albumId: null,
       ...track,
     };
-    tracks.push(newTrack);
-    return newTrack;
+    try {
+      return await this.dataService.createTrack(newTrack);
+    } catch {
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
 
   public async updateTrack(
     id: string,
     updateTrackDto: UpdateTrackDto,
   ): Promise<Track> {
-    const index = tracks.findIndex((item) => item.id === id);
-    if (index < 0) throw new NotFoundException(`Track with id ${id} not found`);
-
-    const track = tracks[index];
-    tracks[index] = {
-      ...track,
-      ...updateTrackDto,
-    };
-    return tracks[index];
+    const track = await this.dataService.getTrackById(id);
+    if (!track) throw new NotFoundException(`Track with id ${id} not found`);
+    return this.dataService.updateTrack(id, updateTrackDto);
   }
 
   public async delete(id: string): Promise<void> {
-    const index = tracks.findIndex((item) => item.id === id);
-    if (index < 0) throw new NotFoundException(`Track with id ${id} not found`);
-    tracks.splice(index, 1);
+    await this.dataService.deleteTrack(id);
   }
 }

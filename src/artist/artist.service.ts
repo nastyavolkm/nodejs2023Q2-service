@@ -1,18 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { artists } from '../store';
 import { v4 as uuidv4 } from 'uuid';
 import { Artist } from './interfaces/artist.interface';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
+import { DataService } from '../data/data.service';
 
 @Injectable()
 export class ArtistService {
+  constructor(private dataService: DataService) {}
   public async getAll(): Promise<Artist[]> {
-    return artists;
+    return this.dataService.getArtists();
   }
 
   public async getById(id: string): Promise<Artist> {
-    const artist = artists.find((artist) => artist.id === id);
+    const artist = await this.dataService.getArtistById(id);
     if (artist) return artist;
     throw new NotFoundException(`Artist with id ${id} not found`);
   }
@@ -22,30 +23,20 @@ export class ArtistService {
       id: uuidv4(),
       ...artist,
     };
-    artists.push(newArtist);
-    return newArtist;
+    return this.dataService.createArtist(newArtist);
   }
 
   public async updateArtist(
     id: string,
     updateArtistDto: UpdateArtistDto,
   ): Promise<Artist> {
-    const index = artists.findIndex((item) => item.id === id);
-    if (index < 0)
-      throw new NotFoundException(`Artist with id ${id} not found`);
+    const artist = await this.dataService.getArtistById(id);
+    if (!artist) throw new NotFoundException(`Artist with id ${id} not found`);
 
-    const artist = artists[index];
-    artists[index] = {
-      ...artist,
-      ...updateArtistDto,
-    };
-    return artists[index];
+    return this.dataService.updateArtist(id, updateArtistDto);
   }
 
   public async delete(id: string): Promise<void> {
-    const index = artists.findIndex((item) => item.id === id);
-    if (index < 0)
-      throw new NotFoundException(`Artist with id ${id} not found`);
-    artists.splice(index, 1);
+    await this.dataService.deleteArtist(id);
   }
 }

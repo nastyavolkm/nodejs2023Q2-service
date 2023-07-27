@@ -1,25 +1,21 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { albums, favs } from '../store';
+import { DataService } from '../data/data.service';
 
 @Injectable()
 export class FavAlbumsService {
+  constructor(private dataService: DataService) {}
   public async addToFavs(id: string): Promise<void> {
-    const album = albums.find((album) => album.id === id);
+    const album = this.dataService.getAlbumById(id);
     if (album) {
-      favs.albums.push(id);
+      await this.dataService.addAlbumToFavs(id);
     } else {
       throw new NotFoundException(`Album with id ${id} not found`);
     }
   }
 
   public async deleteFromFavs(id: string): Promise<void> {
-    const index = albums.findIndex((item) => item.id === id);
-    if (index < 0) throw new NotFoundException(`Album with id ${id} not found`);
-    const indexInFavs = favs.albums.findIndex((itemId) => itemId === id);
-    if (indexInFavs < 0)
-      throw new NotFoundException(
-        `Album with id ${id} not found in favorites artists`,
-      );
-    favs.albums.splice(index, 1);
+    const album = this.dataService.getAlbumById(id);
+    if (!album) throw new NotFoundException(`Album with id ${id} not found`);
+    await this.dataService.deleteAlbumFromFavs(id);
   }
 }
