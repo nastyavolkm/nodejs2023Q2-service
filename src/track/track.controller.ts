@@ -10,10 +10,12 @@ import {
   Put,
 } from '@nestjs/common';
 import { TrackService } from './track.service';
-import { Track } from './interfaces/track.interface';
+import { Track } from './dto/track.dto';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('track')
 @Controller('track')
 export class TrackController {
   constructor(private trackService: TrackService) {}

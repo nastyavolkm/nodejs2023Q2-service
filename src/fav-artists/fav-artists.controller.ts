@@ -7,7 +7,9 @@ import {
   Post,
 } from '@nestjs/common';
 import { FavArtistsService } from './fav-artists.service';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('favs/artist')
 @Controller()
 export class FavArtistsController {
   constructor(private favArtistsService: FavArtistsService) {}

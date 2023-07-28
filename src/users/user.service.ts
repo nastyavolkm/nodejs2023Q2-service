@@ -7,7 +7,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { DataService } from '../data/data.service';
-import { User } from './interfaces/user.interface';
+import { User } from './dto/user.dto';
 
 @Injectable()
 export class UserService {

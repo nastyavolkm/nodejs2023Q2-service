@@ -14,9 +14,11 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { User } from './interfaces/user.interface';
+import { User } from './dto/user.dto';
+import { ApiTags } from '@nestjs/swagger';
 
 @UseInterceptors(ClassSerializerInterceptor)
+@ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(private usersService: UserService) {}

@@ -4,11 +4,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Artist } from '../artist/interfaces/artist.interface';
-import { User } from '../users/interfaces/user.interface';
-import { Album } from '../album/interfaces/album.interface';
-import { Track } from '../track/interfaces/track.interface';
-import { Favorites } from '../favs/interfaces/favorites.interface';
+import { Artist } from '../artist/dto/artist.dto';
+import { User } from '../users/dto/user.dto';
+import { Album } from '../album/dto/album.dto';
+import { Track } from '../track/dto/track.dto';
+import { Favorites } from '../favs/dto/favorites.dto';
 import { UpdatePasswordDto } from '../users/dto/update-password.dto';
 import { UpdateTrackDto } from '../track/dto/update-track.dto';
 import { UpdateAlbumDto } from '../album/dto/update-album.dto';

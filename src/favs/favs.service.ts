@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { FavoritesResponse } from './interfaces/favorites-response.interface';
+import { FavoritesResponse } from './dto/favorites-response.dto';
 import { DataService } from '../data/data.service';
 
 @Injectable()

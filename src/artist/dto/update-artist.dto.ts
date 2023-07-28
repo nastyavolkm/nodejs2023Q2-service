@@ -1,7 +1,7 @@
-import { IsBoolean, IsOptional } from 'class-validator';
+import { IsBoolean, IsDefined, IsOptional } from 'class-validator';
 
 export class UpdateArtistDto {
-  @IsOptional()
+  @IsDefined()
   name: string;
 
   @IsOptional()
