@@ -3,33 +3,31 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { UserResponse } from './interfaces/user-response.interface';
 import { CreateUserDto } from './dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { DataService } from '../data/data.service';
+import { User } from './interfaces/user.interface';
 
 @Injectable()
 export class UserService {
   constructor(private dataService: DataService) {}
-  public async getAll(): Promise<UserResponse[]> {
+  public async getAll(): Promise<User[]> {
     const users = await this.dataService.getUsers();
     return users.map((user) => {
-      const { password: _, ...rest } = user;
-      return rest;
+      return new User(user);
     });
   }
 
-  public async getById(id: string): Promise<UserResponse> {
+  public async getById(id: string): Promise<User> {
     const user = await this.dataService.getUserById(id);
     if (user) {
-      const { password: _, ...rest } = user;
-      return rest;
+      return new User(user);
     }
     throw new NotFoundException(`User with id ${id} not found`);
   }
 
-  public async create(user: CreateUserDto): Promise<UserResponse> {
+  public async create(user: CreateUserDto): Promise<User> {
     const newUser = {
       ...user,
       id: uuidv4(),
@@ -39,8 +37,7 @@ export class UserService {
     };
     try {
       const resultUser = await this.dataService.createUser(newUser);
-      const { password: _, ...rest } = resultUser;
-      return rest;
+      return new User(resultUser);
     } catch {
       throw new InternalServerErrorException('Something went wrong');
     }
@@ -49,7 +46,7 @@ export class UserService {
   public async updatePassword(
     id: string,
     updatePasswordDto: UpdatePasswordDto,
-  ): Promise<UserResponse> {
+  ): Promise<User> {
     const user = await this.dataService.getUserById(id);
     if (!user) throw new NotFoundException(`User with id ${id} not found`);
 
@@ -57,8 +54,7 @@ export class UserService {
       id,
       updatePasswordDto,
     );
-    const { password: _, ...rest } = updatedUser;
-    return rest;
+    return new User(updatedUser);
   }
 
   public async delete(id: string): Promise<void> {
