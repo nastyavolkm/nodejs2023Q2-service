@@ -1,10 +1,3 @@
-import { IsBoolean, IsDefined, IsOptional } from 'class-validator';
+import { CreateArtistDto } from './create-artist.dto';
 
-export class UpdateArtistDto {
-  @IsDefined()
-  name: string;
-
-  @IsOptional()
-  @IsBoolean()
-  grammy: boolean;
-}
+export class UpdateArtistDto extends CreateArtistDto {}

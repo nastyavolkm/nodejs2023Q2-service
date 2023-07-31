@@ -1,14 +1,3 @@
-import { IsInt, IsOptional, IsUUID } from 'class-validator';
+import { CreateAlbumDto } from './create-album.dto';
 
-export class UpdateAlbumDto {
-  @IsOptional()
-  name: string;
-
-  @IsOptional()
-  @IsInt()
-  year: number;
-
-  @IsOptional()
-  @IsUUID()
-  artist?: string | null;
-}
+export class UpdateAlbumDto extends CreateAlbumDto {}

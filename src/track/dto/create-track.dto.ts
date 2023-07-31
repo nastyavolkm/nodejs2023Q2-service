@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsUUID,
+  Min,
 } from 'class-validator';
 
 export class CreateTrackDto {
@@ -14,6 +15,7 @@ export class CreateTrackDto {
   @IsDefined()
   @IsNotEmpty()
   @IsInt()
+  @Min(0)
   duration: number;
 
   @IsOptional()
