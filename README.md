@@ -25,8 +25,10 @@ To check Open API realisation after starting the app on port (4000 as default) y
 in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
 
 
-## Testing
+## Change port via .env
+Make a copy from .env.examle file at name it to .env. Change port to other, run the application.
 
+## Testing
 After application running open new terminal and enter:
 
 To run all tests without authorization
@@ -35,12 +37,8 @@ To run all tests without authorization
 npm run test
 ```
 
-### Auto-fix and format
+### Auto-fix
 
 ```
 npm run lint
-```
-
-```
-npm run format
 ```
