@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 import { Album } from './dto/album.dto';
 import { CreateAlbumDto } from './dto/create-album.dto';
@@ -15,7 +15,7 @@ export class AlbumService {
   public async getById(id: string): Promise<Album> {
     const album = await this.dataService.getAlbumById(id);
     if (album) return album;
-    throw new NotFoundException(`Album with id ${id} not found`);
+    return undefined;
   }
 
   public async create(album: CreateAlbumDto): Promise<Album> {
@@ -32,7 +32,7 @@ export class AlbumService {
     updateAlbumDto: UpdateAlbumDto,
   ): Promise<Album> {
     const album = await this.dataService.getAlbumById(id);
-    if (!album) throw new NotFoundException(`Album with id ${id} not found`);
+    if (!album) return undefined;
 
     return this.dataService.updateAlbum(id, updateAlbumDto);
   }

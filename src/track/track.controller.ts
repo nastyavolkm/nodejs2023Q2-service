@@ -4,6 +4,8 @@ import {
   Delete,
   Get,
   HttpCode,
+  InternalServerErrorException,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
@@ -27,12 +29,16 @@ export class TrackController {
 
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Track> {
-    return this.trackService.getById(id);
+    const track = await this.trackService.getById(id);
+    if (track) return track;
+    throw new NotFoundException(`Track with id ${id} not found`);
   }
 
   @Post()
   async create(@Body() createTrackDto: CreateTrackDto): Promise<Track> {
-    return this.trackService.create(createTrackDto);
+    const track = await this.trackService.create(createTrackDto);
+    if (track) return track;
+    throw new InternalServerErrorException('Something went wrong');
   }
 
   @Put(':id')
@@ -40,7 +46,9 @@ export class TrackController {
     @Body() updateTrackDto: UpdateTrackDto,
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<Track> {
-    return this.trackService.updateTrack(id, updateTrackDto);
+    const track = await this.trackService.updateTrack(id, updateTrackDto);
+    if (track) return track;
+    throw new NotFoundException(`Track with id ${id} not found`);
   }
 
   @Delete(':id')

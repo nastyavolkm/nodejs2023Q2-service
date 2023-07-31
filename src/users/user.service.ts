@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdatePasswordDto } from './dto/update-password.dto';
@@ -19,15 +15,16 @@ export class UserService {
     });
   }
 
-  public async getById(id: string): Promise<User> {
+  public async getById(id: string): Promise<User | undefined> {
     const user = await this.dataService.getUserById(id);
     if (user) {
       return new User(user);
+    } else {
+      return undefined;
     }
-    throw new NotFoundException(`User with id ${id} not found`);
   }
 
-  public async create(user: CreateUserDto): Promise<User> {
+  public async create(user: CreateUserDto): Promise<User | undefined> {
     const newUser = {
       ...user,
       id: uuidv4(),
@@ -39,22 +36,25 @@ export class UserService {
       const resultUser = await this.dataService.createUser(newUser);
       return new User(resultUser);
     } catch {
-      throw new InternalServerErrorException('Something went wrong');
+      return undefined;
     }
   }
 
   public async updatePassword(
     id: string,
     updatePasswordDto: UpdatePasswordDto,
-  ): Promise<User> {
+  ): Promise<User | undefined> {
     const user = await this.dataService.getUserById(id);
-    if (!user) throw new NotFoundException(`User with id ${id} not found`);
+    if (!user) return undefined;
 
-    const updatedUser = await this.dataService.updateUserPassword(
-      id,
-      updatePasswordDto,
-    );
-    return new User(updatedUser);
+    if (user.password === updatePasswordDto.oldPassword) {
+      const updatedUser = await this.dataService.updateUserPassword(
+        id,
+        updatePasswordDto,
+      );
+      return new User(updatedUser);
+    }
+    throw new HttpException('Wrong old password', HttpStatus.FORBIDDEN);
   }
 
   public async delete(id: string): Promise<void> {

@@ -1,25 +1,22 @@
-import {
-  Injectable,
-  NotFoundException,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DataService } from '../data/data.service';
 
 @Injectable()
 export class FavArtistsService {
   constructor(private dataService: DataService) {}
-  public async addToFavs(id: string): Promise<void> {
+  public async addToFavs(id: string): Promise<boolean> {
     const artist = await this.dataService.getArtistById(id);
     if (artist) {
-      await this.dataService.addArtistToFavs(id);
+      return this.dataService.addArtistToFavs(id);
     } else {
-      throw new UnprocessableEntityException(`Artist with id ${id} not found`);
+      return false;
     }
   }
 
-  public async deleteFromFavs(id: string): Promise<void> {
+  public async deleteFromFavs(id: string): Promise<boolean | undefined> {
     const artist = await this.dataService.getArtistById(id);
-    if (!artist) throw new NotFoundException(`Artist with id ${id} not found`);
+    if (!artist) return undefined;
     await this.dataService.deleteArtistFromFavs(id);
+    return true;
   }
 }

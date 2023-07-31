@@ -5,6 +5,8 @@ import {
   Delete,
   Get,
   HttpCode,
+  InternalServerErrorException,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
@@ -30,12 +32,16 @@ export class UserController {
 
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
-    return this.usersService.getById(id);
+    const user = await this.usersService.getById(id);
+    if (user) return user;
+    throw new NotFoundException(`User with id ${id} not found`);
   }
 
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createUserDto);
+    const newUser = await this.usersService.create(createUserDto);
+    if (newUser) return newUser;
+    throw new InternalServerErrorException('Something went wrong');
   }
 
   @Put(':id')
@@ -43,7 +49,12 @@ export class UserController {
     @Body() updatePasswordDto: UpdatePasswordDto,
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<User> {
-    return this.usersService.updatePassword(id, updatePasswordDto);
+    const updatedUser = await this.usersService.updatePassword(
+      id,
+      updatePasswordDto,
+    );
+    if (updatedUser) return updatedUser;
+    throw new NotFoundException(`User with id ${id} not found`);
   }
 
   @Delete(':id')

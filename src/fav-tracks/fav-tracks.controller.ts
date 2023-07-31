@@ -2,9 +2,11 @@ import {
   Controller,
   Delete,
   HttpCode,
+  NotFoundException,
   Param,
   ParseUUIDPipe,
   Post,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { FavTracksService } from './fav-tracks.service';
 import { ApiTags } from '@nestjs/swagger';
@@ -15,13 +17,18 @@ export class FavTracksController {
   constructor(private favTracksService: FavTracksService) {}
 
   @Post(':id')
-  async addToFavs(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    return this.favTracksService.addToFavs(id);
+  async addToFavs(@Param('id', ParseUUIDPipe) id: string): Promise<boolean> {
+    const added = await this.favTracksService.addToFavs(id);
+    if (!added)
+      throw new UnprocessableEntityException(`Track with id ${id} not found`);
+    return added;
   }
 
   @Delete(':id')
   @HttpCode(204)
-  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    return this.favTracksService.deleteFromFavs(id);
+  async delete(@Param('id', ParseUUIDPipe) id: string): Promise<boolean> {
+    const track = await this.favTracksService.deleteFromFavs(id);
+    if (!track) throw new NotFoundException(`Track with id ${id} not found`);
+    return true;
   }
 }
