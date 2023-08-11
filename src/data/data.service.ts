@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Artist } from '../artist/dto/artist.dto';
-import { User } from '../users/dto/user.dto';
+import { UserDto } from '../users/dto/user.dto';
 import { Album } from '../album/dto/album.dto';
 import { Track } from '../track/dto/track.dto';
 import { Favorites } from '../favs/dto/favorites.dto';
@@ -11,7 +11,7 @@ import { UpdateArtistDto } from '../artist/dto/update-artist.dto';
 
 @Injectable()
 export class DataService {
-  private users: User[] = [];
+  private users: UserDto[] = [];
 
   private tracks: Track[] = [];
 
@@ -24,15 +24,15 @@ export class DataService {
     tracks: [],
     albums: [],
   };
-  public async getUsers(): Promise<User[]> {
+  public async getUsers(): Promise<UserDto[]> {
     return this.users;
   }
 
-  public async getUserById(id: string): Promise<User | undefined> {
+  public async getUserById(id: string): Promise<UserDto | undefined> {
     return this.users.find((user) => user.id === id);
   }
 
-  public async createUser(user: User): Promise<User> {
+  public async createUser(user: UserDto): Promise<UserDto> {
     this.users.push(user);
     return user;
   }
@@ -40,7 +40,7 @@ export class DataService {
   public async updateUserPassword(
     id: string,
     { newPassword }: UpdatePasswordDto,
-  ): Promise<User> {
+  ): Promise<UserDto> {
     const index = this.users.findIndex((user) => user.id === id);
     const user = this.users[index];
     this.users[index] = {

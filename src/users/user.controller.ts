@@ -5,6 +5,8 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
+  HttpStatus,
   InternalServerErrorException,
   NotFoundException,
   Param,
@@ -16,8 +18,10 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { User } from './dto/user.dto';
+import { UserDto } from './dto/user.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { NotFoundError } from '../errors/not-found-error';
+import { WrongPasswordError } from '../errors/wrong-password-error';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('user')
@@ -26,35 +30,48 @@ export class UserController {
   constructor(private usersService: UserService) {}
 
   @Get()
-  async findAll(): Promise<User[]> {
+  async findAll(): Promise<UserDto[]> {
     return this.usersService.getAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
-    const user = await this.usersService.getById(id);
-    if (user) return user;
-    throw new NotFoundException(`User with id ${id} not found`);
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserDto> {
+    try {
+      return this.usersService.getById(id);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException(error.message);
+      } else {
+        throw new InternalServerErrorException('Something went wrong');
+      }
+    }
   }
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
-    const newUser = await this.usersService.create(createUserDto);
-    if (newUser) return newUser;
-    throw new InternalServerErrorException('Something went wrong');
+  async create(@Body() createUserDto: CreateUserDto): Promise<UserDto> {
+    try {
+      return this.usersService.create(createUserDto);
+    } catch {
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
 
   @Put(':id')
   async update(
     @Body() updatePasswordDto: UpdatePasswordDto,
     @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<User> {
-    const updatedUser = await this.usersService.updatePassword(
-      id,
-      updatePasswordDto,
-    );
-    if (updatedUser) return updatedUser;
-    throw new NotFoundException(`User with id ${id} not found`);
+  ): Promise<UserDto> {
+    try {
+      return this.usersService.updatePassword(id, updatePasswordDto);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException(error.message);
+      } else if (error instanceof WrongPasswordError) {
+        throw new HttpException(error.message, HttpStatus.FORBIDDEN);
+      } else {
+        throw new InternalServerErrorException('Something went wrong');
+      }
+    }
   }
 
   @Delete(':id')
