@@ -1,28 +1,35 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { ApiHideProperty } from '@nestjs/swagger';
-import { Exclude } from 'class-transformer';
+import { Exclude, Transform } from 'class-transformer';
 
 @Entity()
 class User {
-  @PrimaryGeneratedColumn()
-  public id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
-  public login: string;
+  login: string;
 
   @Column()
   @ApiHideProperty()
   @Exclude()
-  public password: string;
+  password: string;
 
   @Column()
-  public version: number;
+  version: number;
 
-  @Column()
-  createdAt: number;
+  @CreateDateColumn()
+  @Transform(({ value }) => value.getTime())
+  createdAt: Date;
 
-  @Column()
-  updatedAt: number;
+  @CreateDateColumn()
+  @Transform(({ value }) => value.getTime())
+  updatedAt: Date;
 
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);

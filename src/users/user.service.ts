@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { v4 as uuidv4 } from 'uuid';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import User from './user.entity';
 import { Repository } from 'typeorm';
@@ -33,17 +32,13 @@ export class UserService {
   public async create(user: CreateUserDto): Promise<User> {
     const newUser = {
       ...user,
-      id: uuidv4(),
       version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
     };
     try {
       const resultUser = await this.userRepository.create(newUser);
       await this.userRepository.save(resultUser);
       return new User(resultUser);
-    } catch (error) {
-      console.log(error);
+    } catch {
       throw new InternalError();
     }
   }
@@ -73,6 +68,8 @@ export class UserService {
   }
 
   public async delete(id: string): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundError('User', id);
     await this.userRepository.delete(id);
   }
 }

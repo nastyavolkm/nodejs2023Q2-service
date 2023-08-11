@@ -5,6 +5,7 @@ services:
     container_name: nestapp
     image: nestapp/music:1.0.0
     build: .
+    restart: on-failure
     ports:
       - 3000:3000
     environment:
@@ -19,6 +20,7 @@ services:
   db:
     container_name: db-music
     image: postgres:12
+    restart: on-failure
     ports:
       - 5432:5432
     environment:

@@ -18,10 +18,10 @@ import {
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { UserDto } from './dto/user.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { NotFoundError } from '../errors/not-found-error';
 import { WrongPasswordError } from '../errors/wrong-password-error';
+import User from './user.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('user')
@@ -30,25 +30,24 @@ export class UserController {
   constructor(private usersService: UserService) {}
 
   @Get()
-  async findAll(): Promise<UserDto[]> {
+  async findAll(): Promise<User[]> {
     return this.usersService.getAll();
   }
 
   @Get(':id')
-  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<UserDto> {
+  async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<User> {
     try {
-      return this.usersService.getById(id);
+      return await this.usersService.getById(id);
     } catch (error) {
       if (error instanceof NotFoundError) {
         throw new NotFoundException(error.message);
-      } else {
-        throw new InternalServerErrorException('Something went wrong');
       }
+      throw new InternalServerErrorException('Something went wrong');
     }
   }
 
   @Post()
-  async create(@Body() createUserDto: CreateUserDto): Promise<UserDto> {
+  async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     try {
       return this.usersService.create(createUserDto);
     } catch {
@@ -60,23 +59,30 @@ export class UserController {
   async update(
     @Body() updatePasswordDto: UpdatePasswordDto,
     @Param('id', ParseUUIDPipe) id: string,
-  ): Promise<UserDto> {
+  ): Promise<User> {
     try {
-      return this.usersService.updatePassword(id, updatePasswordDto);
+      return await this.usersService.updatePassword(id, updatePasswordDto);
     } catch (error) {
       if (error instanceof NotFoundError) {
         throw new NotFoundException(error.message);
-      } else if (error instanceof WrongPasswordError) {
-        throw new HttpException(error.message, HttpStatus.FORBIDDEN);
-      } else {
-        throw new InternalServerErrorException('Something went wrong');
       }
+      if (error instanceof WrongPasswordError) {
+        throw new HttpException(error.message, HttpStatus.FORBIDDEN);
+      }
+      throw new InternalServerErrorException('Something went wrong');
     }
   }
 
   @Delete(':id')
   @HttpCode(204)
   async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    return this.usersService.delete(id);
+    try {
+      await this.usersService.delete(id);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
 }
