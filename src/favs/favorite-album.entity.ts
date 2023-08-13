@@ -1,6 +1,7 @@
-import { ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import Album from '../album/album.entity';
 
+@Entity()
 export class FavoriteAlbum {
   constructor(album: Album) {
     this.album = album;

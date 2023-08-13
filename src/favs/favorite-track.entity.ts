@@ -1,6 +1,7 @@
-import { ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Track } from '../track/track.entity';
 
+@Entity()
 export class FavoriteTrack {
   constructor(track: Track) {
     this.track = track;

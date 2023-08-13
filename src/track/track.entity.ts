@@ -1,5 +1,10 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
-import { Expose, Transform } from 'class-transformer';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import Artist from '../artist/artist.entity';
 import Album from '../album/album.entity';
 
@@ -15,15 +20,23 @@ export class Track {
   @Column()
   name: string;
 
-  @ManyToOne(() => Artist, null, { onDelete: 'SET NULL', eager: true })
-  @Expose({ name: 'artistId' })
-  @Transform(({ value }) => (value ? value.id : null))
+  @ManyToOne(() => Artist, (artist) => artist.id, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn()
   artist: Artist | null;
 
-  @ManyToOne(() => Album, null, { onDelete: 'SET NULL', eager: true })
-  @Expose({ name: 'albumId' })
-  @Transform(({ value }) => (value ? value.id : null))
+  @Column({ nullable: true })
+  artistId: string | null;
+
+  @ManyToOne(() => Album, (album) => album.id, {
+    onDelete: 'SET NULL',
+  })
+  @JoinColumn()
   album: Album | null;
+
+  @Column({ nullable: true })
+  albumId: string | null;
 
   @Column()
   duration: number;

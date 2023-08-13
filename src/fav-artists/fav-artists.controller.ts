@@ -23,8 +23,9 @@ export class FavArtistsController {
     try {
       await this.favArtistsService.addToFavs(id);
     } catch (error) {
-      if (error instanceof NotFoundError)
+      if (error instanceof NotFoundError) {
         throw new UnprocessableEntityException(error.message);
+      }
       throw new InternalServerErrorException('Something went wrong');
     }
   }
@@ -35,8 +36,9 @@ export class FavArtistsController {
     try {
       await this.favArtistsService.deleteFromFavs(id);
     } catch (error) {
-      if (error instanceof NotFoundError)
+      if (error instanceof NotFoundError) {
         throw new NotFoundException(error.message);
+      }
       throw new InternalServerErrorException('Something went wrong');
     }
   }

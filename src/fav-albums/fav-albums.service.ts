@@ -4,7 +4,6 @@ import { Repository } from 'typeorm';
 import { FavoriteAlbum } from '../favs/favorite-album.entity';
 import { AlbumRepository } from '../album/album-repository';
 import { NotFoundError } from '../errors/not-found-error';
-import { InternalError } from '../errors/internal-error';
 
 @Injectable()
 export class FavAlbumsService {
@@ -13,25 +12,15 @@ export class FavAlbumsService {
     private favAlbumRepository: Repository<FavoriteAlbum>,
     private albumRepository: AlbumRepository,
   ) {}
-  public async addToFavs(id: string): Promise<boolean> {
+  public async addToFavs(id: string): Promise<void> {
     const album = await this.albumRepository.findOne({ where: { id } });
     if (!album) throw new NotFoundError('Album', id);
-    try {
-      await this.favAlbumRepository.save(album);
-      return true;
-    } catch {
-      throw new InternalError();
-    }
+    await this.favAlbumRepository.save(new FavoriteAlbum(album));
   }
 
-  public async deleteFromFavs(id: string): Promise<boolean | undefined> {
+  public async deleteFromFavs(id: string): Promise<void> {
     const album = await this.albumRepository.findOne({ where: { id } });
     if (!album) throw new NotFoundError('Album', id);
-    try {
-      await this.favAlbumRepository.delete(id);
-      return true;
-    } catch {
-      throw new InternalError();
-    }
+    await this.favAlbumRepository.delete({ album: { id } });
   }
 }
