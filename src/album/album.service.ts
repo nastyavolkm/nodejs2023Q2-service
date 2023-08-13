@@ -23,13 +23,13 @@ export class AlbumService {
   }
 
   public async create(album: CreateAlbumDto): Promise<Album> {
-    const { name, year, artist } = album;
-    const artistItem = artist
+    const { name, year, artistId } = album;
+    const artist = artistId
       ? await this.artistRepository.findOne({
-          where: { id: artist },
+          where: { id: artistId },
         })
       : null;
-    const albumToCreate = new Album({ name, year, artist: artistItem });
+    const albumToCreate = new Album({ name, year, artist });
     return await this.albumRepository.save(albumToCreate);
   }
 

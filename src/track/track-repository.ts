@@ -11,8 +11,6 @@ export class TrackRepository extends Repository<Track> {
   async getFavoriteTracks(): Promise<Track[]> {
     return this.createQueryBuilder('track')
       .select('track')
-      .leftJoinAndSelect('track.artist', 'artist')
-      .leftJoinAndSelect('track.album', 'album')
       .innerJoin('favorite_track', 'favorites', 'favorites.trackId = track.id')
       .getMany();
   }

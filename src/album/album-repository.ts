@@ -11,7 +11,6 @@ export class AlbumRepository extends Repository<Album> {
   async getFavoriteAlbums(): Promise<Album[]> {
     return this.createQueryBuilder('album')
       .select('album')
-      .leftJoinAndSelect('album.artist', 'artist')
       .innerJoin('favorite_album', 'favorites', 'favorites.albumId = album.id')
       .getMany();
   }
