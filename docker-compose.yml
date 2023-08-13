@@ -5,29 +5,35 @@ services:
     container_name: nestapp
     image: nestapp/music:1.0.0
     build: .
-    restart: on-failure
+    restart: unless-stopped
     ports:
-      - 3000:3000
+      - ${PORT}:${PORT}
     environment:
-      - DB_TYPE=postgres
-      - PG_HOST=db
-      - PG_USER=postgres
-      - PG_PASSWORD=postgres
-      - PG_DB=postgres
-      - PG_PORT=5432
+      DB_TYPE: ${PG_DB_TYPE}
+      PG_HOST: ${PG_HOST}
+      PG_USER: ${PG_USER}
+      PG_PASSWORD: ${PG_PASSWORD}
+      PG_DB: ${PG_DB}
+      PG_PORT: ${PG_PORT}
     depends_on:
       - db
   db:
     container_name: db-music
     image: postgres:12
-    restart: on-failure
+    restart: unless-stopped
     ports:
-      - 5432:5432
+      - ${PG_PORT}:${PG_PORT}
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=postgres
+      POSTGRES_USER: ${PG_USER}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DB}
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - ./db-data:/var/lib/postgresql/data
 volumes:
-  pgdata: {}
+  db-data:
+    driver: local
+
+networks:
+  user-defined:
+    driver: bridge
+    name: 'user-defined'
