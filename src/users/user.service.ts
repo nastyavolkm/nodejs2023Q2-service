@@ -35,7 +35,7 @@ export class UserService {
       version: 1,
     };
     try {
-      const resultUser = await this.userRepository.create(newUser);
+      const resultUser = this.userRepository.create(newUser);
       await this.userRepository.save(resultUser);
       return new User(resultUser);
     } catch {
@@ -53,14 +53,11 @@ export class UserService {
     if (!user) throw new NotFoundError('User', id);
 
     if (user.password === updatePasswordDto.oldPassword) {
-      await this.userRepository.update(
-        {
-          id,
-        },
-        {
-          password: updatePasswordDto.newPassword,
-        },
-      );
+      await this.userRepository.save({
+        ...user,
+        password: updatePasswordDto.newPassword,
+        version: user.version + 1,
+      });
       const updatedUser = await this.userRepository.findOne({ where: { id } });
       return new User(updatedUser);
     }

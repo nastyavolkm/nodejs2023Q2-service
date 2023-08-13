@@ -1,42 +1,43 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { Artist } from './dto/artist.dto';
 import { CreateArtistDto } from './dto/create-artist.dto';
 import { UpdateArtistDto } from './dto/update-artist.dto';
-import { DataService } from '../data/data.service';
+import Artist from './artist.entity';
+import { NotFoundError } from '../errors/not-found-error';
+import { ArtistRepository } from './artist-repository';
 
 @Injectable()
 export class ArtistService {
-  constructor(private dataService: DataService) {}
+  constructor(private artistRepository: ArtistRepository) {}
   public async getAll(): Promise<Artist[]> {
-    return this.dataService.getArtists();
+    return this.artistRepository.find();
   }
 
   public async getById(id: string): Promise<Artist> {
-    const artist = await this.dataService.getArtistById(id);
-    if (artist) return artist;
-    return undefined;
+    const artist = await this.artistRepository.findOne({ where: { id } });
+    if (!artist) throw new NotFoundError('Artist', id);
+    return artist;
   }
 
   public async create(artist: CreateArtistDto): Promise<Artist> {
-    const newArtist = {
-      id: uuidv4(),
-      ...artist,
-    };
-    return this.dataService.createArtist(newArtist);
+    return await this.artistRepository.save(artist);
   }
 
   public async updateArtist(
     id: string,
     updateArtistDto: UpdateArtistDto,
   ): Promise<Artist> {
-    const artist = await this.dataService.getArtistById(id);
-    if (!artist) return undefined;
+    const artist = await this.artistRepository.findOne({ where: { id } });
+    if (!artist) throw new NotFoundError('Artist', id);
 
-    return this.dataService.updateArtist(id, updateArtistDto);
+    return await this.artistRepository.save({
+      ...artist,
+      ...updateArtistDto,
+    });
   }
 
   public async delete(id: string): Promise<void> {
-    await this.dataService.deleteArtist(id);
+    const artist = await this.artistRepository.findOne({ where: { id } });
+    if (!artist) throw new NotFoundError('Artist', id);
+    await this.artistRepository.delete(id);
   }
 }

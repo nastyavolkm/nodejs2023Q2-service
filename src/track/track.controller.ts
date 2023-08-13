@@ -12,10 +12,11 @@ import {
   Put,
 } from '@nestjs/common';
 import { TrackService } from './track.service';
-import { Track } from './dto/track.dto';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { ApiTags } from '@nestjs/swagger';
+import { Track } from './track.entity';
+import { NotFoundError } from '../errors/not-found-error';
 
 @ApiTags('track')
 @Controller('track')
@@ -29,16 +30,26 @@ export class TrackController {
 
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Track> {
-    const track = await this.trackService.getById(id);
-    if (track) return track;
-    throw new NotFoundException(`Track with id ${id} not found`);
+    try {
+      return await this.trackService.getById(id);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
 
   @Post()
   async create(@Body() createTrackDto: CreateTrackDto): Promise<Track> {
-    const track = await this.trackService.create(createTrackDto);
-    if (track) return track;
-    throw new InternalServerErrorException('Something went wrong');
+    try {
+      return await this.trackService.create(createTrackDto);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
 
   @Put(':id')
@@ -46,14 +57,26 @@ export class TrackController {
     @Body() updateTrackDto: UpdateTrackDto,
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<Track> {
-    const track = await this.trackService.updateTrack(id, updateTrackDto);
-    if (track) return track;
-    throw new NotFoundException(`Track with id ${id} not found`);
+    try {
+      return await this.trackService.updateTrack(id, updateTrackDto);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
 
   @Delete(':id')
   @HttpCode(204)
   async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    return this.trackService.delete(id);
+    try {
+      await this.trackService.delete(id);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
 }

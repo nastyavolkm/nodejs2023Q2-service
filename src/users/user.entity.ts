@@ -3,6 +3,7 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { ApiHideProperty } from '@nestjs/swagger';
 import { Exclude, Transform } from 'class-transformer';
@@ -27,7 +28,7 @@ class User {
   @Transform(({ value }) => value.getTime())
   createdAt: Date;
 
-  @CreateDateColumn()
+  @UpdateDateColumn()
   @Transform(({ value }) => value.getTime())
   updatedAt: Date;
 

@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  InternalServerErrorException,
   NotFoundException,
   Param,
   ParseUUIDPipe,
@@ -11,10 +12,11 @@ import {
   Put,
 } from '@nestjs/common';
 import { AlbumService } from './album.service';
-import { Album } from './dto/album.dto';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { ApiTags } from '@nestjs/swagger';
+import Album from './album.entity';
+import { NotFoundError } from '../errors/not-found-error';
 
 @ApiTags('album')
 @Controller('album')
@@ -28,14 +30,23 @@ export class AlbumController {
 
   @Get(':id')
   async findOne(@Param('id', ParseUUIDPipe) id: string): Promise<Album> {
-    const album = await this.albumService.getById(id);
-    if (album) return album;
-    throw new NotFoundException(`Album with id ${id} not found`);
+    try {
+      return await this.albumService.getById(id);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
 
   @Post()
   async create(@Body() createAlbumDto: CreateAlbumDto): Promise<Album> {
-    return this.albumService.create(createAlbumDto);
+    try {
+      return await this.albumService.create(createAlbumDto);
+    } catch {
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
 
   @Put(':id')
@@ -43,14 +54,26 @@ export class AlbumController {
     @Body() updateAlbumDto: UpdateAlbumDto,
     @Param('id', ParseUUIDPipe) id: string,
   ): Promise<Album> {
-    const album = await this.albumService.updateAlbum(id, updateAlbumDto);
-    if (album) return album;
-    throw new NotFoundException(`Album with id ${id} not found`);
+    try {
+      return await this.albumService.updateAlbum(id, updateAlbumDto);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
 
   @Delete(':id')
   @HttpCode(204)
   async delete(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
-    return this.albumService.delete(id);
+    try {
+      await this.albumService.delete(id);
+    } catch (error) {
+      if (error instanceof NotFoundError) {
+        throw new NotFoundException(error.message);
+      }
+      throw new InternalServerErrorException('Something went wrong');
+    }
   }
 }

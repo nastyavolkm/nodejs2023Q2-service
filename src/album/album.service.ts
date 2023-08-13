@@ -1,43 +1,56 @@
 import { Injectable } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
-import { Album } from './dto/album.dto';
 import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
-import { DataService } from '../data/data.service';
+import Album from './album.entity';
+import { NotFoundError } from '../errors/not-found-error';
+import { AlbumRepository } from './album-repository';
+import { ArtistRepository } from '../artist/artist-repository';
 
 @Injectable()
 export class AlbumService {
-  constructor(private dataService: DataService) {}
+  constructor(
+    private albumRepository: AlbumRepository,
+    private artistRepository: ArtistRepository,
+  ) {}
   public async getAll(): Promise<Album[]> {
-    return this.dataService.getAlbums();
+    return this.albumRepository.find();
   }
 
   public async getById(id: string): Promise<Album> {
-    const album = await this.dataService.getAlbumById(id);
-    if (album) return album;
-    return undefined;
+    const album = await this.albumRepository.findOne({ where: { id } });
+    if (!album) throw new NotFoundError('Album', id);
+    return album;
   }
 
   public async create(album: CreateAlbumDto): Promise<Album> {
-    const newAlbum = {
-      id: uuidv4(),
-      artistId: null,
-      ...album,
-    };
-    return this.dataService.createAlbum(newAlbum);
+    const { name, year, artist } = album;
+    const artistItem = artist
+      ? await this.artistRepository.findOne({
+          where: { id: artist },
+        })
+      : null;
+    const albumToCreate = new Album({ name, year, artist: artistItem });
+    return await this.albumRepository.save(albumToCreate);
   }
 
   public async updateAlbum(
     id: string,
     updateAlbumDto: UpdateAlbumDto,
   ): Promise<Album> {
-    const album = await this.dataService.getAlbumById(id);
-    if (!album) return undefined;
+    const album = await this.albumRepository.findOne({ where: { id } });
+    if (!album) throw new NotFoundError('Album', id);
 
-    return this.dataService.updateAlbum(id, updateAlbumDto);
+    const updatedAlbum = {
+      ...album,
+      ...updateAlbumDto,
+    } as Album;
+
+    return await this.albumRepository.save(updatedAlbum);
   }
 
   public async delete(id: string): Promise<void> {
-    return this.dataService.deleteAlbum(id);
+    const album = await this.albumRepository.findOne({ where: { id } });
+    if (!album) throw new NotFoundError('Album', id);
+    await this.albumRepository.delete(id);
   }
 }
