@@ -25,6 +25,7 @@ services:
   db:
     container_name: db-music
     image: postgres:12
+    build: postgres
     restart: unless-stopped
     ports:
       - ${PG_PORT}:${PG_PORT}
