@@ -21,11 +21,6 @@ docker compose up
 
 ## Open Postman and check functionality
 
-## To run test, install NPM modules
-
-npm install
-
-
 ## Testing
 After application is running open new terminal and enter:
 ```
