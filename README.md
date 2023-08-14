@@ -26,6 +26,8 @@ After application is running open new terminal and enter:
 ```
 npm run test
 ```
+## Scanning for vulnerabilities
+npm run docker:scan
 
 ### Auto-fix
 
