@@ -4,10 +4,13 @@ services:
   nestapp:
     container_name: nestapp
     image: nestapp/music:1.0.0
-    build: .
+    build:
+      context: .
+      target: development
     restart: unless-stopped
     ports:
       - ${PORT}:${PORT}
+    command: npm run start:dev
     environment:
       DB_TYPE: ${PG_DB_TYPE}
       PG_HOST: ${PG_HOST}
@@ -17,6 +20,8 @@ services:
       PG_PORT: ${PG_PORT}
     depends_on:
       - db
+    volumes:
+      - ./src:/app/src
   db:
     container_name: db-music
     image: postgres:12
@@ -28,10 +33,11 @@ services:
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: ${PG_DB}
     volumes:
-      - ./db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql/data
+      - db-logs:/var/log/postgresql
 volumes:
   db-data:
-    driver: local
+  db-logs:
 
 networks:
   user-defined:

@@ -28,9 +28,6 @@ npm install
 
 ## Testing
 After application is running open new terminal and enter:
-
-To run all tests without authorization
-
 ```
 npm run test
 ```
