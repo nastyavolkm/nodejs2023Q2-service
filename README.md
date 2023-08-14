@@ -4,11 +4,12 @@
 
 ## Downloading
 
-```
 git clone https://github.com/nastyavolkm/nodejs2023Q2-service.git
-```
 
-## Check out to task2 branch```
+## Check out to task2 branch
+
+## Install dependencies
+npm install
 
 ## Set up .env
 Make a copy from .env.example file and name it to .env.
