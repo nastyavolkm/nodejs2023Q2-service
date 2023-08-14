@@ -5,7 +5,6 @@ import User from './user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotFoundError } from '../errors/not-found-error';
-import { InternalError } from '../errors/internal-error';
 import { WrongPasswordError } from '../errors/wrong-password-error';
 @Injectable()
 export class UserService {
@@ -34,13 +33,9 @@ export class UserService {
       ...user,
       version: 1,
     };
-    try {
-      const resultUser = this.userRepository.create(newUser);
-      await this.userRepository.save(resultUser);
-      return new User(resultUser);
-    } catch {
-      throw new InternalError();
-    }
+    const resultUser = this.userRepository.create(newUser);
+    await this.userRepository.save(resultUser);
+    return new User(resultUser);
   }
 
   public async updatePassword(
