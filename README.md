@@ -4,41 +4,37 @@
 
 ## Downloading
 
-```
 git clone https://github.com/nastyavolkm/nodejs2023Q2-service.git
-```
 
-## Check out to dev branch
-## Installing NPM modules
+## Check out to task2 branch
 
-```
+## Install dependencies
 npm install
+
+## Set up .env
+Make a copy from .env.example file and name it to .env.
+
+## Running application in docker
+
+```
+docker compose up
 ```
 
-## Running application
-
-```
-npm start
-```
-
-To check Open API realisation after starting the app on port (4000 as default) you can open
-in your browser OpenAPI documentation by typing http://localhost:4000/doc/.
-
-
-## Change port via .env
-Make a copy from .env.examle file at name it to .env. Change port to other, run the application.
+## Open Postman and check functionality
 
 ## Testing
-After application running open new terminal and enter:
-
-To run all tests without authorization
-
+After application is running open new terminal and enter:
 ```
 npm run test
 ```
+## Scanning for vulnerabilities
+npm run docker:scan
 
 ### Auto-fix
 
 ```
 npm run lint
 ```
+
+## Link for Docker hub repo
+https://hub.docker.com/r/nastyavolkm/rss-music-app

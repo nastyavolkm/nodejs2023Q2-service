@@ -1,22 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { DataService } from '../data/data.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { FavoriteAlbum } from '../favs/favorite-album.entity';
+import { AlbumRepository } from '../album/album-repository';
+import { NotFoundError } from '../errors/not-found-error';
 
 @Injectable()
 export class FavAlbumsService {
-  constructor(private dataService: DataService) {}
-  public async addToFavs(id: string): Promise<boolean> {
-    const album = await this.dataService.getAlbumById(id);
-    if (album) {
-      return this.dataService.addAlbumToFavs(id);
-    } else {
-      return false;
-    }
+  constructor(
+    @InjectRepository(FavoriteAlbum)
+    private favAlbumRepository: Repository<FavoriteAlbum>,
+    private albumRepository: AlbumRepository,
+  ) {}
+  public async addToFavs(id: string): Promise<void> {
+    const album = await this.albumRepository.findOne({ where: { id } });
+    if (!album) throw new NotFoundError('Album', id);
+    await this.favAlbumRepository.save(new FavoriteAlbum(album));
   }
 
-  public async deleteFromFavs(id: string): Promise<boolean | undefined> {
-    const album = await this.dataService.getAlbumById(id);
-    if (!album) return undefined;
-    await this.dataService.deleteAlbumFromFavs(id);
-    return true;
+  public async deleteFromFavs(id: string): Promise<void> {
+    const album = await this.albumRepository.findOne({ where: { id } });
+    if (!album) throw new NotFoundError('Album', id);
+    await this.favAlbumRepository.delete({ album: { id } });
   }
 }

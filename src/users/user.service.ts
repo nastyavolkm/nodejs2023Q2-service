@@ -1,63 +1,67 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { v4 as uuidv4 } from 'uuid';
 import { UpdatePasswordDto } from './dto/update-password.dto';
-import { DataService } from '../data/data.service';
-import { User } from './dto/user.dto';
-
+import User from './user.entity';
+import { Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { NotFoundError } from '../errors/not-found-error';
+import { WrongPasswordError } from '../errors/wrong-password-error';
 @Injectable()
 export class UserService {
-  constructor(private dataService: DataService) {}
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
   public async getAll(): Promise<User[]> {
-    const users = await this.dataService.getUsers();
-    return users.map((user) => {
-      return new User(user);
+    return this.userRepository.find();
+  }
+
+  public async getById(id: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id,
+      },
     });
-  }
-
-  public async getById(id: string): Promise<User | undefined> {
-    const user = await this.dataService.getUserById(id);
     if (user) {
-      return new User(user);
-    } else {
-      return undefined;
+      return user;
     }
+    throw new NotFoundError('User', id);
   }
 
-  public async create(user: CreateUserDto): Promise<User | undefined> {
+  public async create(user: CreateUserDto): Promise<User> {
     const newUser = {
       ...user,
-      id: uuidv4(),
       version: 1,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
     };
-    try {
-      const resultUser = await this.dataService.createUser(newUser);
-      return new User(resultUser);
-    } catch {
-      return undefined;
-    }
+    const resultUser = this.userRepository.create(newUser);
+    await this.userRepository.save(resultUser);
+    return new User(resultUser);
   }
 
   public async updatePassword(
     id: string,
     updatePasswordDto: UpdatePasswordDto,
-  ): Promise<User | undefined> {
-    const user = await this.dataService.getUserById(id);
-    if (!user) return undefined;
+  ): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+    if (!user) throw new NotFoundError('User', id);
 
     if (user.password === updatePasswordDto.oldPassword) {
-      const updatedUser = await this.dataService.updateUserPassword(
-        id,
-        updatePasswordDto,
-      );
+      await this.userRepository.save({
+        ...user,
+        password: updatePasswordDto.newPassword,
+        version: user.version + 1,
+      });
+      const updatedUser = await this.userRepository.findOne({ where: { id } });
       return new User(updatedUser);
     }
-    throw new HttpException('Wrong old password', HttpStatus.FORBIDDEN);
+    throw new WrongPasswordError();
   }
 
   public async delete(id: string): Promise<void> {
-    await this.dataService.deleteUser(id);
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) throw new NotFoundError('User', id);
+    await this.userRepository.delete(id);
   }
 }

@@ -10,5 +10,5 @@ export class CreateAlbumDto {
 
   @IsOptional()
   @IsUUID()
-  artist?: string | null;
+  artistId?: string | null;
 }

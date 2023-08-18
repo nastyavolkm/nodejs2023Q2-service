@@ -10,9 +10,12 @@ import { FavArtistsModule } from './fav-artists/fav-artists.module';
 import { FavTracksModule } from './fav-tracks/fav-tracks.module';
 import { FavAlbumsModule } from './fav-albums/fav-albums.module';
 import { RouterModule } from '@nestjs/core';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { dataSourceOptions } from './db/data-source';
 
 @Module({
   imports: [
+    TypeOrmModule.forRoot(dataSourceOptions),
     UserModule,
     TrackModule,
     ArtistModule,

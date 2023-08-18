@@ -1,26 +1,21 @@
 import { Injectable } from '@nestjs/common';
 import { FavoritesResponse } from './dto/favorites-response.dto';
-import { DataService } from '../data/data.service';
+import { AlbumRepository } from '../album/album-repository';
+import { ArtistRepository } from '../artist/artist-repository';
+import { TrackRepository } from '../track/track-repository';
 
 @Injectable()
 export class FavsService {
-  constructor(private dataService: DataService) {}
+  constructor(
+    private albumRepository: AlbumRepository,
+    private artistRepository: ArtistRepository,
+    private trackRepository: TrackRepository,
+  ) {}
   public async getAll(): Promise<FavoritesResponse> {
-    const {
-      artists: artistsIds,
-      tracks: tracksIds,
-      albums: albumsIds,
-    } = await this.dataService.getFavs();
     return {
-      artists: await Promise.all(
-        artistsIds.map(async (id) => this.dataService.getArtistById(id)),
-      ),
-      tracks: await Promise.all(
-        tracksIds.map(async (id) => this.dataService.getTrackById(id)),
-      ),
-      albums: await Promise.all(
-        albumsIds.map(async (id) => this.dataService.getAlbumById(id)),
-      ),
+      artists: await this.artistRepository.getFavoriteArtists(),
+      tracks: await this.trackRepository.getFavoriteTracks(),
+      albums: await this.albumRepository.getFavoriteAlbums(),
     };
   }
 }
