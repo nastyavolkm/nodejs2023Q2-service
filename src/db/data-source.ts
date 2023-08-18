@@ -10,10 +10,8 @@ export const dataSourceOptions: DataSourceOptions = {
   username: process.env.PG_USER,
   password: process.env.PG_PASSWORD,
   database: process.env.PG_DB,
-  synchronize: false,
-  entities: ['dist/**/*.entity.js'],
-  migrations: ['dist/db/migrations/*.js'],
-  migrationsRun: true,
+  synchronize: true,
+  entities: [__dirname + '/**/*.entity{.ts,.js}'],
   logging: false,
 };
 

@@ -21,10 +21,12 @@ services:
     depends_on:
       - db
     volumes:
-      - ./src:/app/src
+      - .:/user/app
+    networks:
+      - user-defined
   db:
     container_name: db-music
-    image: postgres:12
+    image: postgres:latest
     build: postgres
     restart: unless-stopped
     ports:
@@ -34,8 +36,10 @@ services:
       POSTGRES_PASSWORD: ${PG_PASSWORD}
       POSTGRES_DB: ${PG_DB}
     volumes:
-      - db-data:/var/lib/postgresql/data
-      - db-logs:/var/log/postgresql
+      - ./db-data:/var/lib/postgresql/data
+      - ./db-logs:/var/log/postgresql
+    networks:
+      - user-defined
 volumes:
   db-data:
   db-logs:
@@ -43,4 +47,3 @@ volumes:
 networks:
   user-defined:
     driver: bridge
-    name: 'user-defined'
