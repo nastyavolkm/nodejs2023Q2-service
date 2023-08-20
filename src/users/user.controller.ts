@@ -49,7 +49,7 @@ export class UserController {
   @Post()
   async create(@Body() createUserDto: CreateUserDto): Promise<User> {
     try {
-      return this.usersService.create(createUserDto);
+      return await this.usersService.create(createUserDto);
     } catch {
       throw new InternalServerErrorException('Something went wrong');
     }
