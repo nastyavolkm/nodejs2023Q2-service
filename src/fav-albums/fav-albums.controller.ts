@@ -8,14 +8,11 @@ import {
   ParseUUIDPipe,
   Post,
   UnprocessableEntityException,
-  UseGuards,
 } from '@nestjs/common';
 import { FavAlbumsService } from './fav-albums.service';
 import { ApiTags } from '@nestjs/swagger';
 import { NotFoundError } from '../logger/not-found-error';
-import { AuthGuard } from '../auth/auth.guard';
 
-@UseGuards(AuthGuard)
 @ApiTags('favs/album')
 @Controller()
 export class FavAlbumsController {

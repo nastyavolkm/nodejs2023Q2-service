@@ -19,7 +19,7 @@ export class LoggingService extends ConsoleLogger {
     super();
   }
   public logResponse(req: Request, res: Response) {
-    if (LOGGING_LEVELS.log >= this.logLevel) {
+    if (LOGGING_LEVELS.log <= this.logLevel) {
       const { method, body, originalUrl, query } = req;
       const message = `method: ${method} url: ${originalUrl} body: ${JSON.stringify(
         body,
@@ -32,7 +32,7 @@ export class LoggingService extends ConsoleLogger {
   }
 
   public error(message: string, trace?: string) {
-    if (LOGGING_LEVELS.error >= this.logLevel) {
+    if (LOGGING_LEVELS.error <= this.logLevel) {
       super.error(message, trace);
       LoggingService.writeToFile(message, 'error');
     }

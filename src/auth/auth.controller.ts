@@ -13,12 +13,14 @@ import { CreateUserDto } from '../users/dto/create-user.dto';
 import { NotFoundError } from '../logger/not-found-error';
 import { WrongPasswordError } from '../logger/wrong-password-error';
 import { UserNameExistsError } from '../logger/user-name-exists-error';
+import { Public } from './public-decorator';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
+  @Public()
   @Post('login')
   async login(@Body() signInDto: CreateUserDto) {
     try {
@@ -37,6 +39,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('signup')
   async signup(@Body() signUpDto: CreateUserDto) {
     try {

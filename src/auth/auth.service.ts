@@ -35,9 +35,10 @@ export class AuthService {
     if (user) {
       throw new UserNameExistsError(newUser.login);
     }
+
     const password = await bcrypt.hash(
       newUser.password,
-      process.env.CRYPT_SALT,
+      Number(process.env.CRYPT_SALT),
     );
     const newItem = await this.userService.create({
       ...newUser,

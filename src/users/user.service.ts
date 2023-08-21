@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotFoundError } from '../logger/not-found-error';
 import { WrongPasswordError } from '../logger/wrong-password-error';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -29,15 +30,11 @@ export class UserService {
   }
 
   public async getByUserName(login: string): Promise<User> {
-    const user = await this.userRepository.findOne({
+    return await this.userRepository.findOne({
       where: {
         login,
       },
     });
-    if (user) {
-      return user;
-    }
-    throw new NotFoundError('User', login);
   }
 
   public async create(user: CreateUserDto): Promise<User> {

@@ -10,7 +10,6 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
-  UseGuards,
 } from '@nestjs/common';
 import { ArtistService } from './artist.service';
 import { CreateArtistDto } from './dto/create-artist.dto';
@@ -18,9 +17,7 @@ import { UpdateArtistDto } from './dto/update-artist.dto';
 import { ApiTags } from '@nestjs/swagger';
 import Artist from './artist.entity';
 import { NotFoundError } from '../logger/not-found-error';
-import { AuthGuard } from '../auth/auth.guard';
 
-@UseGuards(AuthGuard)
 @ApiTags('artist')
 @Controller('artist')
 export class ArtistController {
