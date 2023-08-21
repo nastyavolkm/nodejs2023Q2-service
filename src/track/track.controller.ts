@@ -16,7 +16,7 @@ import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { Track } from './track.entity';
-import { NotFoundError } from '../errors/not-found-error';
+import { NotFoundError } from '../logger/not-found-error';
 
 @ApiTags('track')
 @Controller('track')

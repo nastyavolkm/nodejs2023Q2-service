@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTrackDto } from './dto/create-track.dto';
 import { UpdateTrackDto } from './dto/update-track.dto';
-import { NotFoundError } from '../errors/not-found-error';
+import { NotFoundError } from '../logger/not-found-error';
 import { TrackRepository } from './track-repository';
 import { Track } from './track.entity';
 import { ArtistRepository } from '../artist/artist-repository';

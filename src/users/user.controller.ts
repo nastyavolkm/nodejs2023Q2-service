@@ -19,8 +19,8 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdatePasswordDto } from './dto/update-password.dto';
 import { ApiTags } from '@nestjs/swagger';
-import { NotFoundError } from '../errors/not-found-error';
-import { WrongPasswordError } from '../errors/wrong-password-error';
+import { NotFoundError } from '../logger/not-found-error';
+import { WrongPasswordError } from '../logger/wrong-password-error';
 import User from './user.entity';
 
 @UseInterceptors(ClassSerializerInterceptor)

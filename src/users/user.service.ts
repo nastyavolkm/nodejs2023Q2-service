@@ -4,8 +4,8 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import User from './user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotFoundError } from '../errors/not-found-error';
-import { WrongPasswordError } from '../errors/wrong-password-error';
+import { NotFoundError } from '../logger/not-found-error';
+import { WrongPasswordError } from '../logger/wrong-password-error';
 @Injectable()
 export class UserService {
   constructor(

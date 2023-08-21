@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FavoriteAlbum } from '../favs/favorite-album.entity';
 import { AlbumRepository } from '../album/album-repository';
-import { NotFoundError } from '../errors/not-found-error';
+import { NotFoundError } from '../logger/not-found-error';
 
 @Injectable()
 export class FavAlbumsService {

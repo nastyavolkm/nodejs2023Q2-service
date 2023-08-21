@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { FavTracksService } from './fav-tracks.service';
 import { ApiTags } from '@nestjs/swagger';
-import { NotFoundError } from '../errors/not-found-error';
+import { NotFoundError } from '../logger/not-found-error';
 
 @ApiTags('favs/track')
 @Controller()

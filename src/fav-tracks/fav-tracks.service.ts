@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { FavoriteTrack } from '../favs/favorite-track.entity';
 import { Repository } from 'typeorm';
 import { TrackRepository } from '../track/track-repository';
-import { NotFoundError } from '../errors/not-found-error';
+import { NotFoundError } from '../logger/not-found-error';
 
 @Injectable()
 export class FavTracksService {

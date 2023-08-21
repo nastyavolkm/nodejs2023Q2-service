@@ -17,9 +17,9 @@ import { FavAlbumsModule } from './fav-albums/fav-albums.module';
 import { APP_FILTER, RouterModule } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './db/data-source';
-import { LoggerMiddleware } from './errors/logger.middleware';
-import { LoggingModule } from './errors/logging/logging.module';
-import { HttpExceptionFilter } from './errors/logging/http-exception.filter';
+import { LoggerMiddleware } from './logger/logger.middleware';
+import { LoggingModule } from './logger/logging/logging.module';
+import { HttpExceptionFilter } from './logger/logging/http-exception.filter';
 
 @Module({
   imports: [
