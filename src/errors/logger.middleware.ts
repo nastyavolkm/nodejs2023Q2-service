@@ -4,11 +4,11 @@ import { LoggingService } from './logging/logging.service';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-  private logger = new LoggingService();
+  constructor(private loggingService: LoggingService) {}
   use(req: Request, res: Response, next: NextFunction) {
-    this.logger.logRequest(req);
+    this.loggingService.logRequest(req);
     res.on('close', () => {
-      this.logger.logResponse(res);
+      this.loggingService.logResponse(res);
     });
     next();
   }

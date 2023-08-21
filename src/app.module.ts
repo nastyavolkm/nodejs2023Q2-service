@@ -14,11 +14,12 @@ import { FavsModule } from './favs/favs.module';
 import { FavArtistsModule } from './fav-artists/fav-artists.module';
 import { FavTracksModule } from './fav-tracks/fav-tracks.module';
 import { FavAlbumsModule } from './fav-albums/fav-albums.module';
-import { RouterModule } from '@nestjs/core';
+import { APP_FILTER, RouterModule } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './db/data-source';
 import { LoggerMiddleware } from './errors/logger.middleware';
 import { LoggingModule } from './errors/logging/logging.module';
+import { HttpExceptionFilter } from './errors/logging/http-exception.filter';
 
 @Module({
   imports: [
@@ -54,7 +55,13 @@ import { LoggingModule } from './errors/logging/logging.module';
     ]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
