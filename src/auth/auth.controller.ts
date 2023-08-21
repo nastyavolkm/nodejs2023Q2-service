@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  HttpCode,
   HttpException,
   HttpStatus,
   InternalServerErrorException,
@@ -12,8 +13,10 @@ import { AuthService } from './auth.service';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { NotFoundError } from '../logger/not-found-error';
 import { WrongPasswordError } from '../logger/wrong-password-error';
-import { UserNameExistsError } from '../logger/user-name-exists-error';
 import { Public } from './public-decorator';
+import { RefreshTokenDto } from './refresh-token.dto';
+import { NoRefreshTokenError } from '../logger/no-refresh-token-error';
+import User from '../users/user.entity';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -21,6 +24,7 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Public()
+  @HttpCode(200)
   @Post('login')
   async login(@Body() signInDto: CreateUserDto) {
     try {
@@ -41,12 +45,23 @@ export class AuthController {
 
   @Public()
   @Post('signup')
-  async signup(@Body() signUpDto: CreateUserDto) {
+  async signup(@Body() signUpDto: CreateUserDto): Promise<User> {
     try {
       return await this.authService.signup(signUpDto);
+    } catch {
+      throw new InternalServerErrorException('Something went wrong');
+    }
+  }
+
+  @Post('refresh')
+  @HttpCode(200)
+  @Public()
+  async refresh(@Body() { refreshToken }: RefreshTokenDto) {
+    try {
+      return await this.authService.refresh(refreshToken);
     } catch (error) {
-      if (error instanceof UserNameExistsError) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      if (error instanceof NoRefreshTokenError) {
+        throw new HttpException(error.message, HttpStatus.UNAUTHORIZED);
       }
       throw new InternalServerErrorException('Something went wrong');
     }
