@@ -28,6 +28,18 @@ export class UserService {
     throw new NotFoundError('User', id);
   }
 
+  public async getByUserName(login: string): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: {
+        login,
+      },
+    });
+    if (user) {
+      return user;
+    }
+    throw new NotFoundError('User', login);
+  }
+
   public async create(user: CreateUserDto): Promise<User> {
     const newUser = {
       ...user,

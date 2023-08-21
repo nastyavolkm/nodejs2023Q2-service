@@ -13,6 +13,7 @@ import {
   ParseUUIDPipe,
   Post,
   Put,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UserService } from './user.service';
@@ -22,7 +23,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { NotFoundError } from '../logger/not-found-error';
 import { WrongPasswordError } from '../logger/wrong-password-error';
 import User from './user.entity';
+import { AuthGuard } from '../auth/auth.guard';
 
+@UseGuards(AuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
 @ApiTags('user')
 @Controller('user')

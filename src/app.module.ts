@@ -20,6 +20,7 @@ import { dataSourceOptions } from './db/data-source';
 import { LoggerMiddleware } from './logger/logger.middleware';
 import { LoggingModule } from './logger/logging/logging.module';
 import { HttpExceptionFilter } from './logger/logging/http-exception.filter';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { HttpExceptionFilter } from './logger/logging/http-exception.filter';
     FavTracksModule,
     FavAlbumsModule,
     LoggingModule,
+    AuthModule,
     RouterModule.register([
       {
         path: 'favs',
