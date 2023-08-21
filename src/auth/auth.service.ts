@@ -5,6 +5,7 @@ import { NotFoundError } from '../logger/not-found-error';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { UserNameExistsError } from '../logger/user-name-exists-error';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -18,7 +19,9 @@ export class AuthService {
     if (!user) {
       throw new NotFoundError('User', login);
     }
-    if (user?.password !== pass) {
+
+    const isMatch = await bcrypt.compare(pass, user.password);
+    if (!isMatch) {
       throw new WrongPasswordError();
     }
     const payload = { sub: user.id, username: user.login };
@@ -32,7 +35,14 @@ export class AuthService {
     if (user) {
       throw new UserNameExistsError(newUser.login);
     }
-    const newItem = await this.userService.create(newUser);
+    const password = await bcrypt.hash(
+      newUser.password,
+      process.env.CRYPT_SALT,
+    );
+    const newItem = await this.userService.create({
+      ...newUser,
+      password,
+    });
     const payload = { sub: newItem.id, username: newItem.login };
     return {
       access_token: await this.jwtService.signAsync(payload),
