@@ -4,8 +4,9 @@ import { UpdatePasswordDto } from './dto/update-password.dto';
 import User from './user.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { NotFoundError } from '../errors/not-found-error';
-import { WrongPasswordError } from '../errors/wrong-password-error';
+import { NotFoundError } from '../logger/not-found-error';
+import { WrongPasswordError } from '../logger/wrong-password-error';
+
 @Injectable()
 export class UserService {
   constructor(
@@ -26,6 +27,14 @@ export class UserService {
       return user;
     }
     throw new NotFoundError('User', id);
+  }
+
+  public async getByUserName(login: string): Promise<User> {
+    return await this.userRepository.findOne({
+      where: {
+        login,
+      },
+    });
   }
 
   public async create(user: CreateUserDto): Promise<User> {

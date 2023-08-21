@@ -16,7 +16,7 @@ import { CreateAlbumDto } from './dto/create-album.dto';
 import { UpdateAlbumDto } from './dto/update-album.dto';
 import { ApiTags } from '@nestjs/swagger';
 import Album from './album.entity';
-import { NotFoundError } from '../errors/not-found-error';
+import { NotFoundError } from '../logger/not-found-error';
 
 @ApiTags('album')
 @Controller('album')

@@ -6,7 +6,7 @@
 
 git clone https://github.com/nastyavolkm/nodejs2023Q2-service.git
 
-## Check out to task2 branch
+## Check out to task3 branch
 
 ## Install dependencies
 npm install
@@ -20,21 +20,10 @@ Make a copy from .env.example file and name it to .env.
 docker compose up
 ```
 
-## Open Postman and check functionality
+## Open Postman and check functionality with authorization
 
 ## Testing
 After application is running open new terminal and enter:
 ```
-npm run test
+npm run test:auth
 ```
-## Scanning for vulnerabilities
-npm run docker:scan
-
-### Auto-fix
-
-```
-npm run lint
-```
-
-## Link for Docker hub repo
-https://hub.docker.com/r/nastyavolkm/rss-music-app

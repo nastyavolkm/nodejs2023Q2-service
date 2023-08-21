@@ -1,4 +1,9 @@
-import { Module } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserModule } from './users/user.module';
@@ -9,9 +14,13 @@ import { FavsModule } from './favs/favs.module';
 import { FavArtistsModule } from './fav-artists/fav-artists.module';
 import { FavTracksModule } from './fav-tracks/fav-tracks.module';
 import { FavAlbumsModule } from './fav-albums/fav-albums.module';
-import { RouterModule } from '@nestjs/core';
+import { APP_FILTER, RouterModule } from '@nestjs/core';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { dataSourceOptions } from './db/data-source';
+import { LoggerMiddleware } from './logger/logger.middleware';
+import { LoggingModule } from './logger/logging/logging.module';
+import { HttpExceptionFilter } from './logger/logging/http-exception.filter';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -24,6 +33,8 @@ import { dataSourceOptions } from './db/data-source';
     FavArtistsModule,
     FavTracksModule,
     FavAlbumsModule,
+    LoggingModule,
+    AuthModule,
     RouterModule.register([
       {
         path: 'favs',
@@ -46,6 +57,18 @@ import { dataSourceOptions } from './db/data-source';
     ]),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+  ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes({ path: '*', method: RequestMethod.ALL });
+  }
+}
